@@ -1,0 +1,12 @@
+{"type":"user_message","id":"69ac4858-8cc0-47d2-8207-9b28993615da","content":"hello there","timestamp":"2026-02-14T22:56:47.953Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"Mock","timestamp":"2026-02-14T22:56:47.954Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T22:56:47.961Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"response","timestamp":"2026-02-14T22:56:47.967Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T22:56:47.973Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"to:","timestamp":"2026-02-14T22:56:47.978Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T22:56:47.984Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"hello","timestamp":"2026-02-14T22:56:47.990Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T22:56:47.996Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"there","timestamp":"2026-02-14T22:56:48.003Z"}
+{"type":"assistant_message_end","provider":"mock","model":"mock-1","message":"Mock response to: hello there","timestamp":"2026-02-14T22:56:48.009Z"}
+{"type":"usage_update","provider":"mock","model":"mock-1","usage":{"inputTokens":12,"outputTokens":9},"timestamp":"2026-02-14T22:56:48.009Z"}

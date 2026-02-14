@@ -1,0 +1,18 @@
+{
+  "name": "@hotui/cli",
+  "version": "0.1.0",
+  "bin": {
+    "hotui": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node dist/index.js run"
+  },
+  "dependencies": {
+    "@hotui/core": "workspace:*",
+    "@hotui/providers": "workspace:*",
+    "@hotui/tui": "workspace:*"
+  }
+}

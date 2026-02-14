@@ -1,0 +1,19 @@
+{
+  "name": "ho-tui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "lint": "tsc -b --noEmit"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@hotui/cli": "workspace:*",
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

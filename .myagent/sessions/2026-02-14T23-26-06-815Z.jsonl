@@ -1,0 +1,56 @@
+{"type":"user_message","id":"d7634a4f-0945-44b0-9c82-91f7ba773652","content":"hello","timestamp":"2026-02-14T23:26:09.879Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"Mock","timestamp":"2026-02-14T23:26:09.888Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:09.900Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"response","timestamp":"2026-02-14T23:26:09.907Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:09.913Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"to:","timestamp":"2026-02-14T23:26:09.921Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:09.927Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"hello","timestamp":"2026-02-14T23:26:09.933Z"}
+{"type":"assistant_message_end","provider":"mock","model":"mock-1","message":"Mock response to: hello","timestamp":"2026-02-14T23:26:09.939Z"}
+{"type":"usage_update","provider":"mock","model":"mock-1","usage":{"inputTokens":8,"outputTokens":7},"timestamp":"2026-02-14T23:26:09.940Z"}
+{"type":"user_message","id":"3e5739cb-5c3a-494e-a554-97a8988b6213","content":"what can you do","timestamp":"2026-02-14T23:26:14.369Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"Mock","timestamp":"2026-02-14T23:26:14.375Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:14.382Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"response","timestamp":"2026-02-14T23:26:14.389Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:14.395Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"to:","timestamp":"2026-02-14T23:26:14.400Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:14.406Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"what","timestamp":"2026-02-14T23:26:14.412Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:14.418Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"can","timestamp":"2026-02-14T23:26:14.424Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:14.430Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"you","timestamp":"2026-02-14T23:26:14.436Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:14.444Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"do","timestamp":"2026-02-14T23:26:14.451Z"}
+{"type":"assistant_message_end","provider":"mock","model":"mock-1","message":"Mock response to: what can you do","timestamp":"2026-02-14T23:26:14.456Z"}
+{"type":"usage_update","provider":"mock","model":"mock-1","usage":{"inputTokens":28,"outputTokens":13},"timestamp":"2026-02-14T23:26:14.456Z"}
+{"type":"user_message","id":"9f05f833-eb9c-4b0f-8e35-0e80897dc9da","content":"hello","timestamp":"2026-02-14T23:26:20.966Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"Mock","timestamp":"2026-02-14T23:26:20.972Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:20.979Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"response","timestamp":"2026-02-14T23:26:20.986Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:20.992Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"to:","timestamp":"2026-02-14T23:26:20.998Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:21.006Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"hello","timestamp":"2026-02-14T23:26:21.012Z"}
+{"type":"assistant_message_end","provider":"mock","model":"mock-1","message":"Mock response to: hello","timestamp":"2026-02-14T23:26:21.017Z"}
+{"type":"usage_update","provider":"mock","model":"mock-1","usage":{"inputTokens":36,"outputTokens":7},"timestamp":"2026-02-14T23:26:21.017Z"}
+{"type":"user_message","id":"57708cb7-4102-4622-ad19-99efde2bda21","content":"/exi","timestamp":"2026-02-14T23:26:36.852Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"Mock","timestamp":"2026-02-14T23:26:36.857Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:36.864Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"response","timestamp":"2026-02-14T23:26:36.871Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:36.877Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"to:","timestamp":"2026-02-14T23:26:36.883Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:36.889Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"/exi","timestamp":"2026-02-14T23:26:36.895Z"}
+{"type":"assistant_message_end","provider":"mock","model":"mock-1","message":"Mock response to: /exi","timestamp":"2026-02-14T23:26:36.901Z"}
+{"type":"usage_update","provider":"mock","model":"mock-1","usage":{"inputTokens":44,"outputTokens":7},"timestamp":"2026-02-14T23:26:36.902Z"}
+{"type":"user_message","id":"12915197-f063-45cc-b645-64d8de46ba30","content":"/exit","timestamp":"2026-02-14T23:26:38.593Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"Mock","timestamp":"2026-02-14T23:26:38.596Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:38.602Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"response","timestamp":"2026-02-14T23:26:38.608Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:38.614Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"to:","timestamp":"2026-02-14T23:26:38.621Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":" ","timestamp":"2026-02-14T23:26:38.627Z"}
+{"type":"assistant_token_delta","provider":"mock","model":"mock-1","token":"/exit","timestamp":"2026-02-14T23:26:38.633Z"}
+{"type":"assistant_message_end","provider":"mock","model":"mock-1","message":"Mock response to: /exit","timestamp":"2026-02-14T23:26:38.639Z"}
+{"type":"usage_update","provider":"mock","model":"mock-1","usage":{"inputTokens":52,"outputTokens":7},"timestamp":"2026-02-14T23:26:38.640Z"}

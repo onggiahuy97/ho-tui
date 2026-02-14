@@ -1,0 +1,17 @@
+{
+  "name": "@hotui/tui",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@hotui/core": "workspace:*",
+    "ink": "^3.2.0",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0"
+  }
+}
