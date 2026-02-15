@@ -4,10 +4,16 @@ import { Box, Text, useInput } from 'ink';
 interface InputBoxProps {
   disabled: boolean;
   onSubmit: (value: string) => void;
+  onInputChange?: (value: string) => void;
 }
 
-export const InputBox: React.FC<InputBoxProps> = ({ disabled, onSubmit }) => {
+export const InputBox: React.FC<InputBoxProps> = ({ disabled, onSubmit, onInputChange }) => {
   const [input, setInput] = useState('');
+
+  const updateInput = useCallback((newValue: string) => {
+    setInput(newValue);
+    onInputChange?.(newValue);
+  }, [onInputChange]);
 
   useInput(useCallback((ch: string, key) => {
     if (disabled) {
@@ -18,20 +24,20 @@ export const InputBox: React.FC<InputBoxProps> = ({ disabled, onSubmit }) => {
       const trimmed = input.trim();
       if (trimmed) {
         onSubmit(trimmed);
-        setInput('');
+        updateInput('');
       }
       return;
     }
 
     if (key.backspace || key.delete) {
-      setInput((prev) => prev.slice(0, -1));
+      updateInput(input.slice(0, -1));
       return;
     }
 
     if (ch && !key.ctrl && !key.meta) {
-      setInput((prev) => prev + ch);
+      updateInput(input + ch);
     }
-  }, [disabled, input, onSubmit]));
+  }, [disabled, input, onSubmit, updateInput]));
 
   return (
     <Box borderStyle="single" paddingX={1}>

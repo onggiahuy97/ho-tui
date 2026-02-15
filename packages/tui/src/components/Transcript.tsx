@@ -29,6 +29,12 @@ export const Transcript: React.FC<TranscriptProps> = ({ entries }) => {
               {entry.content}
             </Text>
           )}
+          {entry.role === 'system' && (
+            <Text color="magenta" dimColor>
+              <Text bold>⚙ </Text>
+              {entry.content}
+            </Text>
+          )}
         </Box>
       ))}
     </Box>

@@ -13,6 +13,7 @@
   "dependencies": {
     "@hotui/core": "workspace:*",
     "@hotui/providers": "workspace:*",
-    "@hotui/tui": "workspace:*"
+    "@hotui/tui": "workspace:*",
+    "dotenv": "^17.3.1"
   }
 }

@@ -5,5 +5,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -b"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.74.0",
+    "openai": "^6.22.0"
   }
 }

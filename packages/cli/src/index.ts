@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+import 'dotenv/config';
 import { AnthropicProvider, EnvSecretStore, ModelProvider, MockProvider, OpenAIProvider } from '@hotui/providers';
 import { AgentRuntime, CoreEvent, EventBus, loadAgentConfig, Redactor, resolveProfile, SessionStore } from '@hotui/core';
 import { renderApp } from '@hotui/tui';
@@ -17,13 +19,15 @@ async function main(): Promise<void> {
     return;
   }
 
+  // `hotui tui`, `hotui --profile=claude`, or just `hotui` → launch interactive TUI
   if (command === 'tui') {
     await launchTui(rest);
     return;
   }
 
-  printUsage();
-  process.exit(command ? 1 : 0);
+  // No command or unknown flags → default to TUI
+  const allArgs = command ? [command, ...rest] : rest;
+  await launchTui(allArgs);
 }
 
 async function runCommand(args: string[]): Promise<void> {
@@ -74,12 +78,41 @@ async function launchTui(args: string[]): Promise<void> {
 
   const profileName = options.profileName ?? config.defaultProfile;
 
+  // Build the available models list from config profiles
+  const availableModels = Object.entries(config.profiles).map(([name, p]) => ({
+    profileName: name,
+    provider: p.provider,
+    model: p.model,
+    description: p.description,
+  }));
+
+  // Factory: create a new runtime when the user switches models via /model
+  const onSwitchModel = (targetProfile: string): AgentRuntime | undefined => {
+    const newProfile = config.profiles[targetProfile];
+    if (!newProfile) return undefined;
+
+    try {
+      const newProvider = createProvider(newProfile.provider);
+      const newEventBus = new EventBus();
+      return new AgentRuntime({
+        provider: newProvider,
+        sessionStore,
+        eventBus: newEventBus,
+        defaultModel: newProfile.model,
+      });
+    } catch {
+      return undefined;
+    }
+  };
+
   await renderApp({
     runtime,
     activeProvider: profile.provider,
     activeModel: profile.model,
     sessionId: sessionStore.sessionId,
     profileName,
+    availableModels,
+    onSwitchModel,
   });
 }
 
@@ -151,10 +184,24 @@ function collectPromptParts(args: string[]): string[] {
 
 function createProvider(providerId: string): ModelProvider {
   switch (providerId) {
-    case 'anthropic':
-      return new AnthropicProvider();
-    case 'openai':
-      return new OpenAIProvider();
+    case 'anthropic': {
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) {
+        console.error('Error: ANTHROPIC_API_KEY is not set.');
+        console.error('Set it in your .env file or export it as an environment variable.');
+        process.exit(1);
+      }
+      return new AnthropicProvider(apiKey);
+    }
+    case 'openai': {
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (!apiKey) {
+        console.error('Error: OPENAI_API_KEY is not set.');
+        console.error('Set it in your .env file or export it as an environment variable.');
+        process.exit(1);
+      }
+      return new OpenAIProvider(apiKey);
+    }
     case 'mock':
     default:
       return new MockProvider();

@@ -2,10 +2,10 @@ import React from 'react';
 import { render } from 'ink';
 import { AgentRuntime } from '@hotui/core';
 import { App } from './components/App';
-import { createInitialState, TuiState } from './state';
+import { createInitialState, ModelOption, TuiState } from './state';
 
 export { createInitialState, TuiState } from './state';
-export type { TranscriptEntry, InitialStateOptions } from './state';
+export type { TranscriptEntry, InitialStateOptions, ModelOption } from './state';
 
 export interface RenderAppOptions {
   runtime: AgentRuntime;
@@ -13,6 +13,8 @@ export interface RenderAppOptions {
   activeModel: string;
   sessionId: string;
   profileName: string;
+  availableModels?: ModelOption[];
+  onSwitchModel?: (profileName: string) => AgentRuntime | undefined;
 }
 
 export async function renderApp(options: RenderAppOptions): Promise<void> {
@@ -21,10 +23,15 @@ export async function renderApp(options: RenderAppOptions): Promise<void> {
     activeModel: options.activeModel,
     sessionId: options.sessionId,
     profileName: options.profileName,
+    availableModels: options.availableModels,
   });
 
   const { waitUntilExit } = render(
-    React.createElement(App, { runtime: options.runtime, initialState }),
+    React.createElement(App, {
+      runtime: options.runtime,
+      initialState,
+      onSwitchModel: options.onSwitchModel,
+    }),
   );
 
   await waitUntilExit();

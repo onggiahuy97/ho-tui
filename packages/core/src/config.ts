@@ -17,12 +17,22 @@ const CONFIG_DIRECTORY = path.join(os.homedir(), '.hotui');
 export const CONFIG_PATH = path.join(CONFIG_DIRECTORY, 'config.json');
 
 const DEFAULT_CONFIG: AgentConfig = {
-  defaultProfile: 'mock',
+  defaultProfile: 'claude',
   profiles: {
     mock: {
       provider: 'mock',
       model: 'mock-1',
       description: 'In-memory mock provider for local demos',
+    },
+    claude: {
+      provider: 'anthropic',
+      model: 'claude-sonnet-4-20250514',
+      description: 'Anthropic Claude Sonnet (default)',
+    },
+    openai: {
+      provider: 'openai',
+      model: 'gpt-4o',
+      description: 'OpenAI GPT-4o',
     },
   },
 };
