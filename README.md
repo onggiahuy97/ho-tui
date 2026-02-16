@@ -30,6 +30,8 @@ Type `/` in the chat to open the command menu:
 
 The `/model` picker lets you hot-swap providers mid-session — no restart required.
 
+The status bar keeps a running tally of input/output tokens (plus active profile, provider/model, session ID, and stream state) so you can watch session-wide usage accrue in real time.
+
 ## Packages
 
 - **`@hotui/core`** — Agent runtime, strongly typed events, append-only session store, config loader, and redaction utilities.

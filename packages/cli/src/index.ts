@@ -1,7 +1,16 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import { AnthropicProvider, EnvSecretStore, ModelProvider, MockProvider, OpenAIProvider } from '@hotui/providers';
-import { AgentRuntime, CoreEvent, EventBus, loadAgentConfig, Redactor, resolveProfile, SessionStore } from '@hotui/core';
+import {
+  AgentRuntime,
+  CoreEvent,
+  EventBus,
+  loadAgentConfig,
+  Redactor,
+  resolveProfile,
+  SessionStore,
+  SessionUsageTotals,
+} from '@hotui/core';
 import { renderApp } from '@hotui/tui';
 import * as path from 'node:path';
 import * as readline from 'node:readline/promises';
@@ -87,7 +96,10 @@ async function launchTui(args: string[]): Promise<void> {
   }));
 
   // Factory: create a new runtime when the user switches models via /model
-  const onSwitchModel = (targetProfile: string): AgentRuntime | undefined => {
+  const onSwitchModel = (
+    targetProfile: string,
+    usageTotals: SessionUsageTotals,
+  ): AgentRuntime | undefined => {
     const newProfile = config.profiles[targetProfile];
     if (!newProfile) return undefined;
 
@@ -99,6 +111,7 @@ async function launchTui(args: string[]): Promise<void> {
         sessionStore,
         eventBus: newEventBus,
         defaultModel: newProfile.model,
+        initialUsageTotals: usageTotals,
       });
     } catch {
       return undefined;
@@ -232,6 +245,7 @@ async function runWithStreaming(runtime: AgentRuntime, prompt: string, model: st
 }
 
 async function printEvents(events: AsyncIterable<CoreEvent>): Promise<void> {
+  let lastSessionTotals: SessionUsageTotals | undefined;
   for await (const event of events) {
     switch (event.type) {
       case 'assistant_token_delta':
@@ -245,12 +259,29 @@ async function printEvents(events: AsyncIterable<CoreEvent>): Promise<void> {
           `\nusage: input=${event.usage.inputTokens} output=${event.usage.outputTokens}`,
         );
         break;
+      case 'session_usage': {
+        lastSessionTotals = event.totals;
+        const costPart =
+          event.totals.cost != null ? ` cost=${event.totals.cost.toFixed(4)}` : '';
+        console.error(
+          `session totals: input=${event.totals.inputTokens} output=${event.totals.outputTokens} turns=${event.totals.turns}${costPart}`,
+        );
+        break;
+      }
       case 'runtime_error':
         console.error(`Runtime error: ${event.message}`);
         break;
       default:
         break;
     }
+  }
+
+  if (lastSessionTotals) {
+    const costPart =
+      lastSessionTotals.cost != null ? ` cost=${lastSessionTotals.cost.toFixed(4)}` : '';
+    console.error(
+      `\nFinal session totals: input=${lastSessionTotals.inputTokens} output=${lastSessionTotals.outputTokens} turns=${lastSessionTotals.turns}${costPart}`,
+    );
   }
 }
 

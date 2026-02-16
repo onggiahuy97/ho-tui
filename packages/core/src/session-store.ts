@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
-import { CoreEvent } from './events';
+import { CoreEvent, SessionUsageTotals } from './events';
 import { Redactor } from './utils/redact';
 
 export interface SessionStoreOptions {
@@ -49,5 +49,15 @@ export class SessionStore {
 
       throw error;
     }
+  }
+
+  async computeUsageTotals(): Promise<SessionUsageTotals> {
+    let totals: SessionUsageTotals = { inputTokens: 0, outputTokens: 0, turns: 0 };
+    for await (const event of this.replay()) {
+      if (event.type === 'session_usage') {
+        totals = { ...event.totals };
+      }
+    }
+    return totals;
   }
 }

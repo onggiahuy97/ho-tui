@@ -15,4 +15,21 @@ export interface RuntimeErrorEvent {
   stack?: string;
 }
 
-export type CoreEvent = ProviderEvent | UserMessageEvent | RuntimeErrorEvent;
+export interface SessionUsageTotals {
+  inputTokens: number;
+  outputTokens: number;
+  turns: number;
+  cost?: number;
+}
+
+export interface SessionUsageEvent {
+  type: 'session_usage';
+  timestamp: string;
+  totals: SessionUsageTotals;
+}
+
+export type CoreEvent =
+  | ProviderEvent
+  | UserMessageEvent
+  | RuntimeErrorEvent
+  | SessionUsageEvent;
