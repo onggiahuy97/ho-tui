@@ -50,4 +50,24 @@ describe('SessionStore', () => {
 
     expect(delta.token).toBe('[REDACTED] token');
   });
+
+  it('computes session usage totals from persisted events', async () => {
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'session-store-totals-'));
+    const store = new SessionStore({ directory: tempDir, sessionId: 'totals-test' });
+
+    await store.append({
+      type: 'session_usage',
+      totals: { inputTokens: 10, outputTokens: 5, turns: 1 },
+      timestamp: new Date().toISOString(),
+    });
+
+    await store.append({
+      type: 'session_usage',
+      totals: { inputTokens: 20, outputTokens: 10, turns: 2 },
+      timestamp: new Date().toISOString(),
+    });
+
+    const totals = await store.computeUsageTotals();
+    expect(totals).toEqual({ inputTokens: 20, outputTokens: 10, turns: 2 });
+  });
 });

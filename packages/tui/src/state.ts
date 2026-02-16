@@ -1,4 +1,4 @@
-import { CoreEvent } from '@hotui/core';
+import { CoreEvent, SessionUsageTotals } from '@hotui/core';
 
 export interface TranscriptEntry {
   role: 'user' | 'assistant' | 'error' | 'system';
@@ -31,6 +31,7 @@ export interface TuiState {
   activeModel: string;
   sessionId: string;
   profileName: string;
+  usageTotals: SessionUsageTotals;
   // Slash menu
   slashMenuOpen: boolean;
   slashFilter: string;
@@ -47,6 +48,7 @@ export interface InitialStateOptions {
   sessionId: string;
   profileName: string;
   availableModels?: ModelOption[];
+  usageTotals?: SessionUsageTotals;
 }
 
 export function createInitialState(opts: InitialStateOptions): TuiState {
@@ -57,6 +59,7 @@ export function createInitialState(opts: InitialStateOptions): TuiState {
     activeModel: opts.activeModel,
     sessionId: opts.sessionId,
     profileName: opts.profileName,
+    usageTotals: opts.usageTotals ?? { inputTokens: 0, outputTokens: 0, turns: 0 },
     slashMenuOpen: false,
     slashFilter: '',
     selectedSlashIndex: 0,
@@ -78,7 +81,8 @@ export type TuiAction =
   | { type: 'model_picker_navigate'; direction: 'up' | 'down' }
   | { type: 'model_selected'; profileName: string; provider: string; model: string }
   | { type: 'clear_transcript' }
-  | { type: 'system_message'; content: string };
+  | { type: 'system_message'; content: string }
+  | { type: 'set_streaming'; value: boolean };
 
 export function getFilteredSlashCommands(filter: string): SlashCommand[] {
   if (!filter) return SLASH_COMMANDS;
@@ -179,6 +183,12 @@ export function tuiReducer(state: TuiState, action: TuiAction): TuiState {
         ],
       };
 
+    case 'set_streaming':
+      return {
+        ...state,
+        streaming: action.value,
+      };
+
     // --- Core events (from event bus) ---
     case 'user_message':
       return {
@@ -249,6 +259,12 @@ export function tuiReducer(state: TuiState, action: TuiAction): TuiState {
           ...state.transcript,
           { role: 'error', content: action.message, timestamp: action.timestamp },
         ],
+      };
+
+    case 'session_usage':
+      return {
+        ...state,
+        usageTotals: action.totals,
       };
 
     default:

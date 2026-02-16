@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { Box, useApp, useInput } from 'ink';
-import { AgentRuntime } from '@hotui/core';
+import { AgentRuntime, SessionUsageTotals } from '@hotui/core';
 import {
   TuiState,
   TuiAction,
@@ -13,11 +13,12 @@ import { Transcript } from './Transcript';
 import { InputBox } from './InputBox';
 import { SlashMenu } from './SlashMenu';
 import { ModelPicker } from './ModelPicker';
+import { UsageStats } from './UsageStats';
 
 interface AppProps {
   runtime: AgentRuntime;
   initialState: TuiState;
-  onSwitchModel?: (profileName: string) => AgentRuntime | undefined;
+  onSwitchModel?: (profileName: string, usageTotals: SessionUsageTotals) => AgentRuntime | undefined;
 }
 
 export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState, onSwitchModel }) => {
@@ -77,7 +78,8 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
       if (key.return) {
         const selected = state.availableModels[state.selectedModelIndex];
         if (selected && onSwitchModel) {
-          const newRuntime = onSwitchModel(selected.profileName);
+          const usageTotals = runtimeRef.current.getUsageTotals();
+          const newRuntime = onSwitchModel(selected.profileName, usageTotals);
           if (newRuntime) {
             switchRuntime(newRuntime);
             dispatch({
@@ -156,6 +158,7 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
       return;
     }
 
+    dispatch({ type: 'set_streaming', value: true });
     runtimeRef.current.run(text).catch(() => {
       // Errors are published as runtime_error events on the event bus
     });
@@ -200,6 +203,7 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
         onSubmit={handleSubmit}
         onInputChange={handleInputChange}
       />
+      <UsageStats totals={state.usageTotals} />
     </Box>
   );
 };

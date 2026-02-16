@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'ink';
-import { AgentRuntime } from '@hotui/core';
+import { AgentRuntime, SessionUsageTotals } from '@hotui/core';
 import { App } from './components/App';
 import { createInitialState, ModelOption, TuiState } from './state';
 
@@ -14,7 +14,7 @@ export interface RenderAppOptions {
   sessionId: string;
   profileName: string;
   availableModels?: ModelOption[];
-  onSwitchModel?: (profileName: string) => AgentRuntime | undefined;
+  onSwitchModel?: (profileName: string, usageTotals: SessionUsageTotals) => AgentRuntime | undefined;
 }
 
 export async function renderApp(options: RenderAppOptions): Promise<void> {

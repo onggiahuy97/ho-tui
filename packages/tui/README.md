@@ -29,7 +29,8 @@ The command menu appears as you type `/` and filters in real-time. Arrow keys to
 - **App** — Root component. Orchestrates the runtime, event bus subscription, slash command handling, and model switching.
 - **InputBox** — Character-by-character text input with slash command detection.
 - **Transcript** — Renders the conversation with color-coded roles (user, assistant, system, error).
-- **StatusBar** — Shows active provider, model, session ID, and streaming status.
+- **StatusBar** — Shows active provider, model, session ID, streaming status, and cumulative token usage for the session.
+- **UsageStats** — Displays the running session token totals just below the chat input so users can see costs even while typing.
 - **SlashMenu** — Filtered command picker overlay.
 - **ModelPicker** — Model selection overlay with active indicator.
 

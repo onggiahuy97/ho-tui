@@ -18,6 +18,14 @@ export const StatusBar: React.FC<StatusBarProps> = ({ state }) => {
       </Text>
       <Text> | {state.activeProvider}/{state.activeModel}</Text>
       <Text> | {truncatedSession}</Text>
+      <Text>
+        {' '}
+        | tokens {state.usageTotals.inputTokens}/{state.usageTotals.outputTokens}
+      </Text>
+      <Text>
+        {' '}
+        | turns {state.usageTotals.turns}
+      </Text>
       <Text> | </Text>
       {state.streaming ? (
         <Text color="yellow">streaming...</Text>

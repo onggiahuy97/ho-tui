@@ -136,6 +136,17 @@ describe('tuiReducer', () => {
     expect(next).toBe(state);
   });
 
+  it('tracks session usage totals', () => {
+    const state = makeState();
+    const event: CoreEvent = {
+      type: 'session_usage',
+      totals: { inputTokens: 42, outputTokens: 21, turns: 2 },
+      timestamp: '2024-01-01T00:00:10.000Z',
+    };
+    const next = tuiReducer(state, event);
+    expect(next.usageTotals).toEqual({ inputTokens: 42, outputTokens: 21, turns: 2 });
+  });
+
   it('handles full multi-turn sequence', () => {
     let state = makeState();
 
