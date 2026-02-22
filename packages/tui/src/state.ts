@@ -1,4 +1,5 @@
 import { CoreEvent, SessionUsageTotals } from '@hotui/core';
+import { filterFiles } from './utils/file-search';
 
 export interface TranscriptEntry {
   role: 'user' | 'assistant' | 'error' | 'system';
@@ -40,6 +41,12 @@ export interface TuiState {
   modelPickerOpen: boolean;
   selectedModelIndex: number;
   availableModels: ModelOption[];
+  // File mention (@)
+  fileMentionOpen: boolean;
+  fileMentionFilter: string;
+  filePickerResults: string[];
+  selectedFileIndex: number;
+  allFiles: string[];
 }
 
 export interface InitialStateOptions {
@@ -66,6 +73,11 @@ export function createInitialState(opts: InitialStateOptions): TuiState {
     modelPickerOpen: false,
     selectedModelIndex: 0,
     availableModels: opts.availableModels ?? [],
+    fileMentionOpen: false,
+    fileMentionFilter: '',
+    filePickerResults: [],
+    selectedFileIndex: 0,
+    allFiles: [],
   };
 }
 
@@ -82,13 +94,23 @@ export type TuiAction =
   | { type: 'model_selected'; profileName: string; provider: string; model: string }
   | { type: 'clear_transcript' }
   | { type: 'system_message'; content: string }
-  | { type: 'set_streaming'; value: boolean };
+  | { type: 'set_streaming'; value: boolean }
+  | { type: 'file_mention_open'; allFiles: string[]; filter: string }
+  | { type: 'file_mention_close' }
+  | { type: 'file_mention_update_filter'; filter: string }
+  | { type: 'file_mention_navigate'; direction: 'up' | 'down' };
 
 export function getFilteredSlashCommands(filter: string): SlashCommand[] {
   if (!filter) return SLASH_COMMANDS;
   return SLASH_COMMANDS.filter((cmd) =>
     cmd.name.toLowerCase().startsWith('/' + filter.toLowerCase()),
   );
+}
+
+/** Returns the filter string if input ends with @word, else null. */
+export function getActiveMention(input: string): string | null {
+  const match = /(?:^|\s)@(\S*)$/.exec(input);
+  return match ? match[1] : null;
 }
 
 export function tuiReducer(state: TuiState, action: TuiAction): TuiState {
@@ -266,6 +288,47 @@ export function tuiReducer(state: TuiState, action: TuiAction): TuiState {
         ...state,
         usageTotals: action.totals,
       };
+
+    // --- File mention (@) actions ---
+    case 'file_mention_open': {
+      const results = filterFiles(action.allFiles, action.filter);
+      return {
+        ...state,
+        fileMentionOpen: true,
+        fileMentionFilter: action.filter,
+        filePickerResults: results,
+        selectedFileIndex: 0,
+        allFiles: action.allFiles,
+      };
+    }
+
+    case 'file_mention_close':
+      return {
+        ...state,
+        fileMentionOpen: false,
+        fileMentionFilter: '',
+        filePickerResults: [],
+        selectedFileIndex: 0,
+      };
+
+    case 'file_mention_update_filter': {
+      const results = filterFiles(state.allFiles, action.filter);
+      return {
+        ...state,
+        fileMentionFilter: action.filter,
+        filePickerResults: results,
+        selectedFileIndex: 0,
+      };
+    }
+
+    case 'file_mention_navigate': {
+      if (state.filePickerResults.length === 0) return state;
+      const delta = action.direction === 'up' ? -1 : 1;
+      const next =
+        (state.selectedFileIndex + delta + state.filePickerResults.length) %
+        state.filePickerResults.length;
+      return { ...state, selectedFileIndex: next };
+    }
 
     default:
       return state;
