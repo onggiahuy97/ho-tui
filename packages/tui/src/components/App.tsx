@@ -1,18 +1,22 @@
-import React, { useReducer, useEffect, useCallback, useRef } from 'react';
+import React, { useReducer, useEffect, useCallback, useRef, useState } from 'react';
 import { Box, useApp, useInput } from 'ink';
+import * as path from 'path';
 import { AgentRuntime, SessionUsageTotals } from '@hotui/core';
 import {
   TuiState,
   TuiAction,
   tuiReducer,
   getFilteredSlashCommands,
+  getActiveMention,
   SLASH_COMMANDS,
 } from '../state';
+import { listFiles, readFileAttachment } from '../utils/file-search';
 import { StatusBar } from './StatusBar';
 import { Transcript } from './Transcript';
 import { InputBox } from './InputBox';
 import { SlashMenu } from './SlashMenu';
 import { ModelPicker } from './ModelPicker';
+import { FilePicker } from './FilePicker';
 import { UsageStats } from './UsageStats';
 
 interface AppProps {
@@ -25,7 +29,7 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
   const [state, dispatch] = useReducer(tuiReducer, initialState);
   const { exit } = useApp();
   const runtimeRef = useRef(initialRuntime);
-  const inputRef = useRef('');
+  const [inputText, setInputText] = useState('');
 
   useEffect(() => {
     const subscription = runtimeRef.current.events.subscribe();
@@ -53,11 +57,39 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
     })();
   }, []);
 
-  // Handle keyboard for slash menu & model picker overlays
+  // Handle keyboard for slash menu, model picker, and file picker overlays
   useInput(useCallback((_ch: string, key) => {
     if (key.ctrl && _ch === 'c') {
       runtimeRef.current.events.complete();
       exit();
+      return;
+    }
+
+    // File picker navigation
+    if (state.fileMentionOpen) {
+      if (key.escape) {
+        dispatch({ type: 'file_mention_close' });
+        return;
+      }
+      if (key.upArrow) {
+        dispatch({ type: 'file_mention_navigate', direction: 'up' });
+        return;
+      }
+      if (key.downArrow) {
+        dispatch({ type: 'file_mention_navigate', direction: 'down' });
+        return;
+      }
+      if (key.return) {
+        const selected = state.filePickerResults[state.selectedFileIndex];
+        if (selected) {
+          const newText = inputText.replace(/(?:^|\s)@\S*$/, (m) =>
+            m.replace(/@\S*$/, `@${selected}`),
+          );
+          setInputText(newText);
+          dispatch({ type: 'file_mention_close' });
+        }
+        return;
+      }
       return;
     }
 
@@ -120,7 +152,7 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
       }
       return;
     }
-  }, [state.slashMenuOpen, state.modelPickerOpen, state.slashFilter, state.selectedSlashIndex, state.selectedModelIndex, state.availableModels, onSwitchModel, switchRuntime, exit]));
+  }, [state.fileMentionOpen, state.filePickerResults, state.selectedFileIndex, state.slashMenuOpen, state.modelPickerOpen, state.slashFilter, state.selectedSlashIndex, state.selectedModelIndex, state.availableModels, inputText, onSwitchModel, switchRuntime, exit]));
 
   const executeSlashCommand = useCallback((command: string) => {
     switch (command) {
@@ -138,9 +170,9 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
     }
   }, []);
 
-  const handleSubmit = useCallback((text: string) => {
-    // If we're in a menu, don't send — the useInput handler above deals with Enter
-    if (state.slashMenuOpen || state.modelPickerOpen) {
+  const handleSubmit = useCallback(async (text: string) => {
+    // If we're in a menu, don't send
+    if (state.slashMenuOpen || state.modelPickerOpen || state.fileMentionOpen) {
       return;
     }
 
@@ -158,14 +190,44 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
       return;
     }
 
+    // Resolve @file mentions
+    const mentionRe = /@(\S+)/g;
+    const mentions = [...text.matchAll(mentionRe)];
+    let augmented = text;
+    if (mentions.length > 0) {
+      const blocks: string[] = [];
+      for (const [, relPath] of mentions) {
+        const absPath = path.resolve(process.cwd(), relPath);
+        const block = readFileAttachment(absPath, relPath);
+        blocks.push(block);
+      }
+      augmented = blocks.join('\n') + '\n\n' + text;
+    }
+
     dispatch({ type: 'set_streaming', value: true });
-    runtimeRef.current.run(text).catch(() => {
+    runtimeRef.current.run(augmented).catch(() => {
       // Errors are published as runtime_error events on the event bus
     });
-  }, [state.slashMenuOpen, state.modelPickerOpen, executeSlashCommand]);
+  }, [state.slashMenuOpen, state.modelPickerOpen, state.fileMentionOpen, executeSlashCommand]);
 
   const handleInputChange = useCallback((value: string) => {
-    inputRef.current = value;
+    setInputText(value);
+
+    // File mention detection
+    const mentionFilter = getActiveMention(value);
+    if (mentionFilter !== null) {
+      if (!state.fileMentionOpen) {
+        const files = listFiles(process.cwd());
+        dispatch({ type: 'file_mention_open', allFiles: files, filter: mentionFilter });
+      } else {
+        dispatch({ type: 'file_mention_update_filter', filter: mentionFilter });
+      }
+      return;
+    } else if (state.fileMentionOpen) {
+      dispatch({ type: 'file_mention_close' });
+    }
+
+    // Slash menu detection
     if (value.startsWith('/')) {
       const filter = value.slice(1);
       if (!state.slashMenuOpen) {
@@ -176,7 +238,7 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
     } else if (state.slashMenuOpen) {
       dispatch({ type: 'slash_menu_close' });
     }
-  }, [state.slashMenuOpen]);
+  }, [state.fileMentionOpen, state.slashMenuOpen]);
 
   const filteredCommands = getFilteredSlashCommands(state.slashFilter);
 
@@ -198,10 +260,18 @@ export const App: React.FC<AppProps> = ({ runtime: initialRuntime, initialState,
           currentProfile={state.profileName}
         />
       )}
+      {state.fileMentionOpen && (
+        <FilePicker
+          files={state.filePickerResults}
+          selectedIndex={state.selectedFileIndex}
+          filter={state.fileMentionFilter}
+        />
+      )}
       <InputBox
         disabled={state.streaming || state.modelPickerOpen}
+        value={inputText}
+        onChange={handleInputChange}
         onSubmit={handleSubmit}
-        onInputChange={handleInputChange}
       />
       <UsageStats totals={state.usageTotals} />
     </Box>

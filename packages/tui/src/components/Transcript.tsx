@@ -2,6 +2,10 @@ import React from 'react';
 import { Box, Text } from 'ink';
 import { TranscriptEntry } from '../state';
 
+function collapseFileBlocks(content: string): string {
+  return content.replace(/<file path="([^"]+)"[^>]*>[\s\S]*?<\/file>/g, '[reading: $1]');
+}
+
 interface TranscriptProps {
   entries: TranscriptEntry[];
 }
@@ -14,7 +18,7 @@ export const Transcript: React.FC<TranscriptProps> = ({ entries }) => {
           {entry.role === 'user' && (
             <Text>
               <Text bold color="blue">You: </Text>
-              {entry.content}
+              {collapseFileBlocks(entry.content)}
             </Text>
           )}
           {entry.role === 'assistant' && (
