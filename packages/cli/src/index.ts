@@ -12,6 +12,7 @@ import {
   SessionUsageTotals,
 } from '@hotui/core';
 import { renderApp } from '@hotui/tui';
+import { parseAndSaveJob, createDatabase } from '@hotui/jobs';
 import * as path from 'node:path';
 import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
@@ -25,6 +26,11 @@ async function main(): Promise<void> {
 
   if (command === 'run') {
     await runCommand(rest);
+    return;
+  }
+
+  if (command === 'job') {
+    await jobCommand(rest);
     return;
   }
 
@@ -126,6 +132,9 @@ async function launchTui(args: string[]): Promise<void> {
     profileName,
     availableModels,
     onSwitchModel,
+    jobParseProvider: provider,
+    jobParseModel: profile.model,
+    databaseUrl: process.env.HOTUI_DATABASE_URL,
   });
 }
 
@@ -285,9 +294,60 @@ async function printEvents(events: AsyncIterable<CoreEvent>): Promise<void> {
   }
 }
 
+async function jobCommand(args: string[]): Promise<void> {
+  const options = parseOptions(args);
+  const urlArg = collectPromptParts(args).join(' ').trim();
+  if (!urlArg) {
+    console.error('A job posting URL is required.');
+    console.error('Usage: hotui job <url> [--profile=name]');
+    process.exit(1);
+  }
+
+  const databaseUrl = process.env.HOTUI_DATABASE_URL;
+  if (!databaseUrl) {
+    console.error('Error: HOTUI_DATABASE_URL is not set.');
+    console.error('Set it in your .env file or export it as an environment variable.');
+    console.error('Example: HOTUI_DATABASE_URL=postgresql://localhost:5432/hotui');
+    process.exit(1);
+  }
+
+  const config = await loadAgentConfig();
+  const profile = resolveProfile(config, options.profileName);
+  const provider = createProvider(profile.provider);
+  const db = createDatabase(databaseUrl);
+
+  try {
+    const job = await parseAndSaveJob({
+      url: urlArg,
+      provider,
+      model: profile.model,
+      db,
+      onProgress: (msg) => console.error(msg),
+    });
+
+    console.log(JSON.stringify({
+      id: job.id,
+      title: job.title,
+      company: job.company,
+      location: job.location,
+      salary: job.salary,
+      externalJobId: job.externalJobId,
+      postedDate: job.postedDate,
+      applicationUrl: job.applicationUrl,
+      sourceUrl: job.sourceUrl,
+      description: job.description?.slice(0, 200) + (job.description && job.description.length > 200 ? '...' : ''),
+      requirements: job.requirements?.slice(0, 200) + (job.requirements && job.requirements.length > 200 ? '...' : ''),
+    }, null, 2));
+  } catch (error) {
+    console.error(`Error: ${error instanceof Error ? error.message : error}`);
+    process.exit(1);
+  }
+}
+
 function printUsage(): void {
   console.log('Usage:');
   console.log('  hotui run [prompt] [--profile=name]   Run a single prompt');
+  console.log('  hotui job <url> [--profile=name]       Parse a job posting and save to DB');
   console.log('  hotui tui [--profile=name]            Launch interactive TUI');
 }
 

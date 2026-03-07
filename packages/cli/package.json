@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hotui/core": "workspace:*",
+    "@hotui/jobs": "workspace:*",
     "@hotui/providers": "workspace:*",
     "@hotui/tui": "workspace:*",
     "dotenv": "^17.3.1"

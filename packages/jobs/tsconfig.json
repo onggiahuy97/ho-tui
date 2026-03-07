@@ -6,9 +6,6 @@
   },
   "include": ["src"],
   "references": [
-    { "path": "../core" },
-    { "path": "../providers" },
-    { "path": "../tui" },
-    { "path": "../jobs" }
+    { "path": "../providers" }
   ]
 }

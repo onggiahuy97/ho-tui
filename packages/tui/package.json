@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@hotui/core": "workspace:*",
+    "@hotui/jobs": "workspace:*",
+    "@hotui/providers": "workspace:*",
     "ink": "^3.2.0",
     "react": "^18.2.0"
   },

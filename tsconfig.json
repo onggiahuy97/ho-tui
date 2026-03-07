@@ -4,6 +4,7 @@
     { "path": "./packages/core" },
     { "path": "./packages/providers" },
     { "path": "./packages/cli" },
-    { "path": "./packages/tui" }
+    { "path": "./packages/tui" },
+    { "path": "./packages/jobs" }
   ]
 }

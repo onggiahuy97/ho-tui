@@ -22,7 +22,9 @@ export interface SlashCommand {
 export const SLASH_COMMANDS: SlashCommand[] = [
   { name: '/model', description: 'Switch the active model' },
   { name: '/clear', description: 'Clear the conversation' },
+  { name: '/job', description: 'Parse a job posting URL and save to DB' },
   { name: '/help', description: 'Show available commands' },
+  { name: '/exit', description: 'Exit the application' },
 ];
 
 export interface TuiState {
